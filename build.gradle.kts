@@ -9,6 +9,7 @@ plugins {
     kotlin("plugin.allopen") version "1.5.10"
 }
 
+// make entity classes non-final
 allOpen {
     annotation("javax.persistence.Entity")
     annotation("javax.persistence.Embeddable")
@@ -24,16 +25,28 @@ repositories {
 }
 
 dependencies {
+    // COMMON COMPONENTS
+    // base services for management, configuration and discovery
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+
+    // support web/api
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+
+    // COMMON COMPONENTS
+    // support database access
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.flywaydb:flyway-core")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     runtimeOnly("com.h2database:h2")
     runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
+
+    // Kotlin support
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("io.github.microutils:kotlin-logging:2.0.8")
+
+    // TESTING
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
@@ -46,4 +59,9 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+// make application executable jar to register it as linux service
+tasks.bootJar {
+    launchScript()
 }
